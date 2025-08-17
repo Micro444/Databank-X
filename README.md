@@ -89,7 +89,7 @@ print(basic.show_List())
 saves.save_json("my_data.json")
 
 # Encrypt file
-security.decrypt("my_data.json")
+security.encrypt("my_data.json")
 ```
 
 ---
@@ -171,17 +171,17 @@ saves.overwrite_data_json("database.json")
 
 | Function | Description | Key Storage |
 |----------|-------------|-------------|
-| `decrypt(files)` | Encrypt file | Saves key to `keys.txt` |
-| `entcrypt(filess, keys)` | Decrypt file | Reads key from `keys.txt` |
+| `encrypt(files)` | Encrypt file | Saves key to `keys.txt` |
+| `decrypt(filess, keys)` | Decrypt file | Reads key from `keys.txt` |
 
 ### Usage
 
 ```python
 # Encrypt a file (generates and saves key automatically)
-security.decrypt("sensitive_data.json")
+security.encrypt("sensitive_data.json")
 
 # Decrypt the file using saved key
-security.entcrypt("sensitive_data.json", "keys.txt")
+security.decrypt("sensitive_data.json", "keys.txt")
 ```
 
 ⚠️ **Security Note**: Keep your `keys.txt` file secure and separate from encrypted data!
@@ -213,11 +213,11 @@ print("Current data:", basic.show_List())
 saves.save_json("company_data.json")
 
 # 5. Encrypt the file
-security.decrypt("company_data.json")
+security.encrypt("company_data.json")
 print("Data encrypted successfully!")
 
 # 6. Later: decrypt and load
-security.entcrypt("company_data.json", "keys.txt")
+security.decrypt("company_data.json", "keys.txt")
 saves.overwrite_data_json("company_data.json")
 print("Data decrypted and loaded:", basic.show_List())
 ```
@@ -308,3 +308,74 @@ Converts string `datas` to a list and adds it to `data[directory]`.
 ### Saves Module (`saves`)
 
 #### `saves.save_json(file)`
+Saves the current data structure to a JSON file.
+
+**Parameters:**
+- `file` (str) - Filename for the JSON file
+
+**Returns:** None
+
+#### `saves.see_json(file)`
+Loads and returns data from a JSON file without modifying the current data.
+
+**Parameters:**
+- `file` (str) - JSON filename to load
+
+**Returns:** `dict` - Loaded data structure
+
+#### `saves.overwrite_data_json(file)`
+Loads data from JSON file and overwrites the current data structure.
+
+**Parameters:**
+- `file` (str) - JSON filename to load
+
+**Returns:** None
+
+### Security Module (`security`)
+
+#### `security.encrypt(files)`
+Encrypts a file using Fernet symmetric encryption and saves the key to `keys.txt`.
+
+**Parameters:**
+- `files` (str) - File to encrypt
+
+**Returns:** None
+
+#### `security.decrypt(filess, keys)`
+Decrypts a file using the key from the specified key file.
+
+**Parameters:**
+- `filess` (str) - File to decrypt
+- `keys` (str) - Key file path (usually `keys.txt`)
+
+**Returns:** None
+
+---
+
+## Contributing
+
+We welcome contributions! Please feel free to submit a Pull Request.
+
+### Development Setup
+
+1. Fork the repository
+2. Create a virtual environment
+3. Install dependencies: `pip install -r requirements.txt`
+4. Make your changes
+5. Run tests
+6. Submit a pull request
+
+---
+
+## Changelog
+
+### Version 1.0.0
+- Initial release with basic data management
+- JSON serialization support
+- Fernet encryption integration
+
+---
+
+## License
+
+This project is licensed under a Custom License. See the license terms for more details.
