@@ -17,6 +17,10 @@ _Developed by Micro444_
 - [Basic Functions (`basic`)](#basic-functions-basic)
 - [JSON File Management (`saves`)](#json-file-management-saves)
 - [Encryption & Security (`security`)](#encryption--security-security)
+- [Logging System (`LogManager`)](#logging-system-logmanager)
+- [Data Export (`convert`)](#data-export-convert)
+- [Search Functionality (`search`)](#search-functionality-search)
+- [Backup System (`backup`)](#backup-system-backup)
 - [Examples](#examples)
 - [API Reference](#api-reference)
 - [Contributing](#contributing)
@@ -27,15 +31,18 @@ _Developed by Micro444_
 
 ## Overview
 
-**Databank_X** is a lightweight Python library for managing dictionary-based data with integrated functions for JSON serialization and file encryption using Fernet (symmetric encryption).
+**Databank_X** is a lightweight Python library for managing dictionary-based data with integrated functions for JSON serialization, file encryption using Fernet (symmetric encryption), comprehensive logging, data export capabilities, and backup functionality.
 
 ### Key Features
 
 ✨ **Simple Data Structure Management** - Dictionary-based data organization  
-🔒 **Built-in Encryption** - Fernet-based file encryption  
+🔒 **Built-in Encryption** - Fernet-based file encryption with key management  
 💾 **JSON Persistence** - Automatic data saving and loading  
-🚀 **Minimal Dependencies** - Only `cryptography` as external dependency  
-📝 **Fully Documented** - Comprehensive API documentation  
+📊 **Data Export** - Export to Excel and CSV formats  
+🔍 **Search Functionality** - Find data across all directories  
+📝 **Comprehensive Logging** - Optional logging system with file output  
+🔄 **Backup System** - Automated data backup functionality  
+🚀 **Minimal Dependencies** - Only `cryptography` and `pandas` as external dependencies  
 
 Perfect for small projects, learning purposes, prototyping, or as a foundation for larger database solutions.
 
@@ -49,12 +56,10 @@ Perfect for small projects, learning purposes, prototyping, or as a foundation f
 pip install databank_x
 ```
 
-
-
 ### Dependencies
 
 ```bash
-pip install cryptography>=3.0.0
+pip install cryptography>=3.0.0 pandas>=1.3.0
 ```
 
 ---
@@ -62,7 +67,10 @@ pip install cryptography>=3.0.0
 ## Quick Start
 
 ```python
-from databank_x import basic, saves, security
+from databank_x import basic, saves, security, LogManager
+
+# Initialize logging (optional)
+LogManager.setup("app.log")
 
 # Initialize data structure
 basic.basic_List()
@@ -76,7 +84,7 @@ basic.add_data("Bob", "users")
 
 # Display data
 print(basic.show_List())
-# Output: {'users': ['Alice', 'Bob'], ...}
+# Output: {'test1': [1, 'hi'], 'test2': ['his', 86], 'users': ['Alice', 'Bob']}
 
 # Save as JSON
 saves.save_json("my_data.json")
@@ -89,8 +97,7 @@ security.encrypt("my_data.json")
 
 ## Basic Functions (`basic`)
 
-Jump to:  
-[JSON File Management](#json-file-management-saves) | [Encryption](#encryption--security-security) | [API Reference](#api-reference)
+Jump to: [Logging](#logging-system-logmanager) | [Data Export](#data-export-convert) | [Search](#search-functionality-search)
 
 ### Function Overview
 
@@ -101,7 +108,7 @@ Jump to:
 | `add_data(data, dir)` | Add data | `basic.add_data("value", "folder")` |
 | `add_directory(name)` | Create directory | `basic.add_directory("new_folder")` |
 | `remove_directory(name)` | Delete directory | `basic.remove_directory("folder")` |
-| `remove_data(dir, index)` | Remove data | `basic.remove_data("folder", 0)` |
+| `remove_data(dir, index)` | Remove data by index | `basic.remove_data("folder", 0)` |
 | `index_searche(dir, index)` | Search by index | `basic.index_searche("folder", 1)` |
 | `string_data(string, dir)` | String to list | `basic.string_data("Hello", "chars")` |
 
@@ -111,7 +118,7 @@ Jump to:
 Initializes the global data structure with sample data:
 ```python
 basic.basic_List()
-# Creates: {'example': ['data1', 'data2'], 'numbers': [1, 2, 3]}
+# Creates: {'test1': [1, 'hi'], 'test2': ['his', 86]}
 ```
 
 #### `basic.add_data(datas, directory)`
@@ -127,7 +134,7 @@ basic.add_data("Banana", "fruits")
 Converts a string into a list of characters:
 ```python
 basic.string_data("Hello", "letters")
-# Result: {'letters': ['H', 'e', 'l', 'l', 'o']}
+# Result: {'letters': [['H', 'e', 'l', 'l', 'o']]}
 ```
 
 ---
@@ -165,7 +172,7 @@ saves.overwrite_data_json("database.json")
 | Function | Description | Key Storage |
 |----------|-------------|-------------|
 | `encrypt(files)` | Encrypt file | Saves key to `keys.txt` |
-| `decrypt(filess, keys)` | Decrypt file | Reads key from `keys.txt` |
+| `decrypt(filess, keys)` | Decrypt file | Reads key from specified file |
 
 ### Usage
 
@@ -181,14 +188,105 @@ security.decrypt("sensitive_data.json", "keys.txt")
 
 ---
 
+## Logging System (`LogManager`)
+
+### Functions
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `setup(file)` | Initialize logging | None |
+| `see_log(file)` | Read log file | String |
+| `log_message(message)` | Log custom message | None |
+
+### Usage
+
+```python
+# Initialize logging system
+LogManager.setup("application.log")
+
+# Log custom messages
+LogManager.log_message("Application started")
+
+# View log contents
+print(LogManager.see_log("application.log"))
+```
+
+When logging is enabled, all operations are automatically logged with timestamps and detailed information.
+
+---
+
+## Data Export (`convert`)
+
+### Functions
+
+| Function | Description | Output Format |
+|----------|-------------|---------------|
+| `convert_to_excel(file)` | Export to Excel | `.xlsx` |
+| `convert_to_csv(file)` | Export to CSV | `.csv` |
+
+### Usage
+
+```python
+# Export data to Excel
+convert.convert_to_excel("data_export.xlsx")
+
+# Export data to CSV
+convert.convert_to_csv("data_export.csv")
+```
+
+The data is automatically formatted with directories as columns and their values as rows.
+
+---
+
+## Search Functionality (`search`)
+
+### Functions
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `search_data(value)` | Find value in all directories | Tuple (key, list) or None |
+
+### Usage
+
+```python
+# Search for a specific value across all directories
+result = search.search_data("Alice")
+if result:
+    directory, data_list = result
+    print(f"Found 'Alice' in directory '{directory}': {data_list}")
+else:
+    print("Value not found")
+```
+
+---
+
+## Backup System (`backup`)
+
+### Functions
+
+| Function | Description | Output |
+|----------|-------------|---------|
+| `backup_data()` | Create data backup | `backup.json` |
+
+### Usage
+
+```python
+# Create automatic backup
+backup.backup_data()
+# Creates backup.json with current data state
+```
+
+---
+
 ## Examples
 
 ### Complete Data Management Workflow
 
 ```python
-from databank_x import basic, saves, security
+from databank_x import basic, saves, security, LogManager, convert, search, backup
 
-# 1. Initialize and setup data
+# 1. Initialize logging and setup data
+LogManager.setup("company.log")
 basic.basic_List()
 basic.add_directory("employees")
 basic.add_directory("projects")
@@ -199,35 +297,43 @@ basic.add_data("Jane Smith", "employees")
 basic.add_data("Website Redesign", "projects")
 basic.add_data("Mobile App", "projects")
 
-# 3. Display current state
-print("Current data:", basic.show_List())
+# 3. Search for data
+result = search.search_data("John Doe")
+print(f"Search result: {result}")
 
-# 4. Save to JSON
+# 4. Create backup
+backup.backup_data()
+
+# 5. Export to different formats
+convert.convert_to_excel("company_data.xlsx")
+convert.convert_to_csv("company_data.csv")
+
+# 6. Save and encrypt
 saves.save_json("company_data.json")
-
-# 5. Encrypt the file
 security.encrypt("company_data.json")
-print("Data encrypted successfully!")
 
-# 6. Later: decrypt and load
-security.decrypt("company_data.json", "keys.txt")
-saves.overwrite_data_json("company_data.json")
-print("Data decrypted and loaded:", basic.show_List())
+# 7. View logs
+print("Application logs:")
+print(LogManager.see_log("company.log"))
 ```
 
-### Working with String Data
+### Working with Logging
 
 ```python
-# Convert text to character lists
-basic.add_directory("messages")
-basic.string_data("Hello World", "messages")
+# Enable detailed logging
+LogManager.setup("detailed.log")
 
-# Access individual characters
-first_char = basic.index_searche("messages", 0)  # 'H'
-print(f"First character: {first_char}")
+# All operations are now automatically logged
+basic.basic_List()
+basic.add_directory("test")
+basic.add_data("sample", "test")
 
-# Display all characters
-print("All characters:", basic.show_List()["messages"])
+# Add custom log messages
+LogManager.log_message("Custom operation completed")
+
+# View complete log
+logs = LogManager.see_log("detailed.log")
+print(logs)
 ```
 
 ---
@@ -236,112 +342,69 @@ print("All characters:", basic.show_List()["messages"])
 
 ### Basic Module (`basic`)
 
-#### `basic.basic_List()`
-Initializes the global dictionary with default values.
+All functions remain the same as in the previous version, with added logging support when enabled.
+
+### LogManager Module (`LogManager`)
+
+#### `LogManager.setup(file)`
+Initializes the logging system with the specified log file.
+
+**Parameters:**
+- `file` (str) - Log filename
 
 **Returns:** None
 
-#### `basic.show_List()`
-Returns the current state of the data dictionary.
-
-**Returns:** `dict` - Current data structure
-
-#### `basic.add_data(datas, directory)`
-Adds `datas` to the list in directory `data[directory]`.
+#### `LogManager.see_log(file)`
+Reads and returns the contents of a log file.
 
 **Parameters:**
-- `datas` (any) - Data to add
-- `directory` (str) - Target directory name
+- `file` (str) - Log filename to read
+
+**Returns:** `str` - Log file contents or error message
+
+#### `LogManager.log_message(message)`
+Logs a custom message if logging is enabled.
+
+**Parameters:**
+- `message` (str) - Message to log
 
 **Returns:** None
 
-#### `basic.add_directory(name)`
-Creates a new empty directory `data[name]`.
+### Convert Module (`convert`)
+
+#### `convert.convert_to_excel(excel_file)`
+Exports current data to Excel format.
 
 **Parameters:**
-- `name` (str) - Directory name
+- `excel_file` (str) - Output Excel filename
 
 **Returns:** None
 
-#### `basic.remove_directory(name)`
-Deletes the directory and all its data.
+#### `convert.convert_to_csv(csv_file)`
+Exports current data to CSV format.
 
 **Parameters:**
-- `name` (str) - Directory name to remove
+- `csv_file` (str) - Output CSV filename
 
 **Returns:** None
 
-#### `basic.remove_data(directory, datass)`
-Removes the value at index `datass` from `data[directory]`.
+### Search Module (`search`)
+
+#### `search.search_data(value)`
+Searches for a value across all directories.
 
 **Parameters:**
-- `directory` (str) - Directory name
-- `datass` (int) - Index to remove
+- `value` (any) - Value to search for
+
+**Returns:** `tuple` (directory_name, directory_contents) or `None`
+
+### Backup Module (`backup`)
+
+#### `backup.backup_data()`
+Creates a backup of the current data structure.
 
 **Returns:** None
-
-#### `basic.index_searche(directory, indexes)`
-Returns the value at index `indexes` in `data[directory]` or `"error"`.
-
-**Parameters:**
-- `directory` (str) - Directory name
-- `indexes` (int) - Index to search
-
-**Returns:** `any` or `"error"`
-
-#### `basic.string_data(datas, directory)`
-Converts string `datas` to a list and adds it to `data[directory]`.
-
-**Parameters:**
-- `datas` (str) - String to convert
-- `directory` (str) - Target directory
-
-**Returns:** None
-
-### Saves Module (`saves`)
-
-#### `saves.save_json(file)`
-Saves the current data structure to a JSON file.
-
-**Parameters:**
-- `file` (str) - Filename for the JSON file
-
-**Returns:** None
-
-#### `saves.see_json(file)`
-Loads and returns data from a JSON file without modifying the current data.
-
-**Parameters:**
-- `file` (str) - JSON filename to load
-
-**Returns:** `dict` - Loaded data structure
-
-#### `saves.overwrite_data_json(file)`
-Loads data from JSON file and overwrites the current data structure.
-
-**Parameters:**
-- `file` (str) - JSON filename to load
-
-**Returns:** None
-
-### Security Module (`security`)
-
-#### `security.encrypt(files)`
-Encrypts a file using Fernet symmetric encryption and saves the key to `keys.txt`.
-
-**Parameters:**
-- `files` (str) - File to encrypt
-
-**Returns:** None
-
-#### `security.decrypt(filess, keys)`
-Decrypts a file using the key from the specified key file.
-
-**Parameters:**
-- `filess` (str) - File to decrypt
-- `keys` (str) - Key file path (usually `keys.txt`)
-
-**Returns:** None
+**Creates:** `backup.json` file
 
 ---
 
@@ -361,6 +424,14 @@ We welcome contributions! Please feel free to submit a Pull Request.
 ---
 
 ## Changelog
+
+### Version 2.0.0
+- Added comprehensive logging system (`LogManager`)
+- Implemented data export functionality (Excel/CSV)
+- Added search functionality across directories
+- Integrated automatic backup system
+- Enhanced error handling and logging throughout
+- Improved code structure and documentation
 
 ### Version 1.0.0
 - Initial release with basic data management
