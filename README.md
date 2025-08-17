@@ -49,14 +49,7 @@ Perfect for small projects, learning purposes, prototyping, or as a foundation f
 pip install databank_x
 ```
 
-### Manual Installation
 
-1. Download `Databank_X.py` and place it in your project directory
-2. Install dependencies:
-
-```bash
-pip install cryptography>=3.0.0
-```
 
 ### Dependencies
 
