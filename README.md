@@ -53,7 +53,7 @@ Perfect for small projects, learning purposes, prototyping, or as a foundation f
 ### Via pip (Recommended)
 
 ```bash
-pip install databank_x
+pip install databank-x
 ```
 
 ### Dependencies
